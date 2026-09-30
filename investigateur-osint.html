@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le Déclic — Investigateur OSINT</title>
+<style>
+  :root{
+    --bg:#050709;
+    --bg2:#0a0e13;
+    --cyan:#5ce1e6;
+    --violet:#8b7cf6;
+    --text:#eef3f5;
+    --muted:#93a1ab;
+    --line:#1c2530;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  header{
+    position:sticky;top:env(safe-area-inset-top,0px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 22px;
+    background:rgba(5,7,9,.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    z-index:10;
+  }
+  .logo{font-weight:700;font-size:1.05rem;letter-spacing:.02em;}
+  .logo .accent{color:var(--cyan);}
+  .back{
+    display:inline-block;
+    padding:8px 16px;
+    background:rgba(92,225,230,.1);
+    border:1px solid var(--cyan);
+    border-radius:6px;
+    font-size:.9rem;
+    color:var(--cyan);
+    text-decoration:none;
+    transition:all .2s;
+  }
+  .back:hover{background:rgba(92,225,230,.15);}
+
+  .hero{
+    padding:60px 24px 40px;
+    text-align:center;
+    background:radial-gradient(ellipse at 50% 0%, rgba(92,225,230,.10), transparent 60%), var(--bg);
+  }
+  .eyebrow{color:var(--cyan);font-family:'Courier New',monospace;font-size:.95rem;margin-bottom:14px;}
+  h1{font-size:1.8rem;line-height:1.2;margin:0 0 14px;font-weight:700;}
+  .sub{color:var(--muted);font-size:1rem;max-width:500px;margin:0 auto 0;}
+
+  .curriculum{padding:40px 24px;}
+  .curriculum-intro{text-align:center;margin-bottom:50px;}
+  .curriculum-intro h2{font-size:1.4rem;margin:0 0 12px;}
+  .curriculum-intro .sub{color:var(--muted);font-size:.95rem;}
+
+  .toc{
+    background:rgba(92,225,230,.05);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px;
+    margin-bottom:50px;
+  }
+  .toc strong{display:block;margin-bottom:16px;color:var(--cyan);}
+  .toc h4{margin:16px 0 12px;font-size:1rem;color:var(--text);}
+  .toc ul{margin:0;padding-left:20px;list-style:none;}
+  .toc li{margin:6px 0;}
+  .toc a{color:var(--cyan);text-decoration:none;}
+  .toc a:hover{text-decoration:underline;}
+
+  h2{font-size:1.5rem;margin:60px 0 20px;font-weight:700;}
+  h2.salle{color:var(--violet);}
+  .moduleintro{color:var(--muted);font-size:1.05rem;margin-bottom:30px;font-style:italic;}
+
+  h3{font-size:1.15rem;margin:40px 0 16px;font-weight:600;display:flex;align-items:center;gap:10px;}
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:rgba(139,124,246,.2);
+    border:1px solid var(--violet);
+    border-radius:4px;
+    font-size:.8rem;
+    color:var(--violet);
+    font-weight:500;
+  }
+
+  .schema{
+    margin:24px 0;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .schema svg{width:100%;height:auto;}
+  .schema .l{fill:none;stroke:var(--cyan);stroke-width:2;}
+  .schema .a{fill:none;stroke:var(--violet);stroke-width:2;}
+  .schema .d{fill:none;stroke:var(--text);stroke-width:2;}
+
+  h4{font-size:1rem;margin:20px 0 10px;color:var(--text);}
+  p{margin:12px 0;color:var(--text);}
+  strong{color:var(--cyan);}
+
+  .consigne{
+    background:rgba(92,225,230,.05);
+    border-left:3px solid var(--cyan);
+    padding:12px 16px;
+    margin:16px 0;
+    border-radius:4px;
+  }
+
+  .opts{
+    list-style:none;
+    padding:0;
+    margin:16px 0;
+  }
+  .opts li{
+    background:rgba(10,14,19,.5);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    margin-bottom:12px;
+    border-radius:6px;
+    transition:all .2s;
+  }
+  .opts li:hover{border-color:var(--cyan);background:rgba(92,225,230,.05);}
+  .opts li.ok{border-left:3px solid #4ade80;}
+  .opts li.no{border-left:3px solid #f87171;}
+  .opts .mark{display:inline-block;width:20px;margin-right:8px;}
+  .opts .bucket{
+    display:inline-block;
+    background:rgba(139,124,246,.2);
+    color:var(--violet);
+    padding:2px 8px;
+    border-radius:3px;
+    font-size:.85rem;
+    margin-right:6px;
+  }
+  .opts code{
+    background:rgba(0,0,0,.3);
+    padding:2px 6px;
+    border-radius:3px;
+    font-family:'Courier New',monospace;
+    font-size:.9rem;
+  }
+  .why{
+    display:block;
+    color:var(--muted);
+    font-size:.9rem;
+    margin-top:6px;
+  }
+
+  .retenir{
+    background:rgba(139,124,246,.08);
+    border:1px solid var(--violet);
+    padding:16px;
+    border-radius:6px;
+    margin:20px 0;
+    color:var(--text);
+    font-weight:500;
+  }
+
+  .closing{
+    padding:60px 24px;
+    text-align:center;
+    background:var(--bg2);
+    border-top:1px solid var(--line);
+  }
+  .closing h2{font-size:1.4rem;margin:0 0 16px;}
+  .closing a{color:var(--cyan);text-decoration:none;}
+  .closing a:hover{text-decoration:underline;}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">Le <span class="accent">Déclic</span></div>
+  <a href="index.html" class="back">← Retour</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">// recherche et intelligence</div>
+  <h1>Investigateur OSINT</h1>
+  <p class="sub">Tu lis ce que tout le monde peut lire, mais tu vois ce que presque personne ne voit. C'est du renseignement, pas du hack.</p>
+</section>
+
+<section class="curriculum">
+  <div class="curriculum-intro">
+    <h2>Quatre modules, une mission</h2>
+    <p class="sub">Chercher, évaluer, approfondir, surveiller. L'art de transformer de l'information publique en intelligence.</p>
+  </div>
+
+  <div class="toc">
+    <strong>Sommaire</strong>
+    <h4>Module 1 — Chercher efficace</h4>
+    <ul>
+      <li><a href="#osint1">OSINT1 — Chercher, un métier</a></li>
+      <li><a href="#osint2">OSINT2 — Les moteurs spécialisés</a></li>
+    </ul>
+    <h4>Module 2 — Évaluer et filtrer</h4>
+    <ul>
+      <li><a href="#osint3">OSINT3 — Évaluer les sources</a></li>
+      <li><a href="#osint4">OSINT4 — Distinguer réalité et désinformation</a></li>
+    </ul>
+    <h4>Module 3 — Approfondir et connecter</h4>
+    <ul>
+      <li><a href="#osint5">OSINT5 — Trouver les personnes (passivement)</a></li>
+      <li><a href="#osint6">OSINT6 — Mapper les connexions</a></li>
+    </ul>
+    <h4>Module 4 — Veille et adaptation</h4>
+    <ul>
+      <li><a href="#osint7">OSINT7 — Surveiller en continu</a></li>
+      <li><a href="#osint8">OSINT8 — Synthétiser et rapporter</a></li>
+    </ul>
+  </div>
+
+  <h2 id="module1">Module 1 — Chercher efficace</h2>
+  <div class="moduleintro">Une bonne recherche ne commence pas sur Google. Elle commence par la bonne question.</div>
+
+  <h3 id="osint1">OSINT1 — Chercher, un métier<span class="badge">question</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="d" x="24" y="38" width="272" height="122" rx="8"/><path class="d" d="M24 78 h272 M24 118 h272"/><rect class="l" x="42" y="50" width="14" height="28"/><rect class="l" x="60" y="56" width="14" height="22"/><rect class="a" x="84" y="46" width="14" height="32"/><rect class="l" x="130" y="52" width="14" height="26"/><rect class="a" x="148" y="48" width="14" height="30"/><rect class="l" x="216" y="54" width="14" height="24"/><rect class="a" x="238" y="50" width="14" height="28"/></svg></div>
+  <h4>Analogie : La bibliothèque qui contient tout</h4>
+  <p>Une bibliothèque a un million de livres. Tu ne peux pas les lire tous. Mais si tu poses la bonne question au bibliothécaire, il te donne exactement le livre qu'il te faut en 30 secondes. « Je cherche des infos sur X » = perdu. « Je cherche l'édition 2023 du rapport sur X », c'est clair. Trouver, ce n'est pas chercher plus fort — c'est poser la bonne question.</p>
+  <h4>Chercher = articuler ta question</h4>
+  <p><strong>Terme :</strong> Recherche structurée</p>
+  <p><strong>Définition simple :</strong> Savoir quoi chercher et où chercher. Pas juste taper au hasard dans Google.</p>
+  <p><strong>Détail :</strong> « Qu'est-ce que je cherche vraiment ? » est la question clé. Un domaine ? Une personne ? Une faille techniquement ? Une infraction passée ? Chaque réponse pointe vers une source différente.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> OSINT = Open Source Intelligence. Source ouvert (disponible publiquement) + intelligence (compréhension transformée en action).</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Trie ces objectifs : pour chaque, quelle est la bonne source de départ ?</p>
+  <ul class="opts">
+    <li><span class="bucket">[Google / moteur large]</span> Quels articles de presse mentionnent cette compagnie ?<br><span class="why">Une question large qui demande une exploration. Google te ramène des articles et des pages pertinentes.</span></li>
+    <li><span class="bucket">[Whois / RDAP]</span> À qui appartient ce domaine, et depuis quand ?<br><span class="why">C'est la base de registre centralisée. Whois = l'autorité sur qui contrôle un domaine.</span></li>
+    <li><span class="bucket">[CVE / NVD]</span> Cette version de logiciel a-t-elle des vulnérabilités connues ?<br><span class="why">Base CVE du NIST = l'autorité officielle sur les vulnérabilités.</span></li>
+    <li><span class="bucket">[GitHub / repos]</span> Quels projets open source utilisent cette librairie ?<br><span class="why">C'est du code — tu cherches sur GitHub ou GitLab, pas sur Google.</span></li>
+    <li><span class="bucket">[Shodan]</span> Quels serveurs Jenkins publiquement accessibles se connectent à cet IP ?<br><span class="why">Shodan scanne Internet continuellement. C'est son domaine de spécialité.</span></li>
+  </ul>
+  <p class="retenir">À retenir : La source dépend de ce que tu cherches. Mais avec la bonne source, tu trouves toujours.</p>
+
+  <h3 id="osint2">OSINT2 — Les moteurs spécialisés<span class="badge">base</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="l" x="44" y="34" width="232" height="34" rx="6"/><path class="l" d="M60 48 h200"/><path class="d" d="M50 92 h80 M50 120 h100 M50 148 h90"/><path class="a" d="M160 92 h90 M160 120 h70 M160 148 h85"/></svg></div>
+  <h4>Analogie : Les archives municipales vs. la presse locale</h4>
+  <p>Tu cherches un acte de naissance. Tu vas pas chez le journaliste — tu vas aux archives. Tu cherches les titres du jour, tu vas chez le journaliste. Chaque type d'info a sa source naturelle. Et si tu vas à la mauvaise source, tu perds du temps.</p>
+  <h4>Moteurs spécialisés : des bases indexées sur mesure</h4>
+  <p><strong>Terme :</strong> Moteurs spécialisés</p>
+  <p><strong>Définition simple :</strong> Des outils qui indexent UNIQUEMENT les informations qui t'intéressent, sans le bruit de Google.</p>
+  <p><strong>Détail :</strong> Shodan scanne les serveurs publics. CVE indexe les failles. Archive.org garde les anciennes versions de sites web. Maltego connecte les dots entre des infos. Chacun a une spécialité. Apprendre ces moteurs, c'est être 10x plus efficace.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Spécialisé = focus. Contrairement à Google qui indexe « tout Internet », un moteur spécialisé dit « je ne vois que ça, mais je le vois bien ».</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Avec quel outil tu trouves le plus vite ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Chercher une vulnérabilité connue dans une version précise d'Apache → CVE ou NVD<br><span class="why">C'est indexé là, pas sur Google. Plus rapide et plus fiable.</span></li>
+    <li class="ok"><span class="mark">✓</span> Chercher une adresse IP qui tournait un serveur web il y a 2 ans → Archive.org<br><span class="why">Archive.org a des snapshots datés. Google n'a que la page actuelle.</span></li>
+    <li class="no"><span class="mark">✗</span> Chercher des serveurs Jenkins exposés sur Internet → Google<br><span class="why">Mauvais. Shodan est fait pour ça. Google te noiera dans les pages Jenkins légitimes.</span></li>
+    <li class="ok"><span class="mark">✓</span> Chercher si une personne a du contenu public sur plusieurs plateformes → Maltego ou Pipl<br><span class="why">Ces outils connectent les identités. Ils trouvent les liens entre les comptes.</span></li>
+    <li class="no"><span class="mark">✗</span> Chercher un exploit PoC détaillé → Google<br><span class="why">Techniquement oui, mais ExploitDB ou PacketStorm sont plus directs et plus spécialisés.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Chaque question a son outil. Apprends l'outil et la question devient triviale.</p>
+
+  <h2 id="module2">Module 2 — Évaluer et filtrer</h2>
+  <div class="moduleintro">Maintenant que tu as trouvé des infos, comment tu sais si c'est vrai ?</div>
+
+  <h3 id="osint3">OSINT3 — Évaluer les sources<span class="badge">qualite</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="a" cx="100" cy="100" r="30"/><path class="a" d="M100 70 v60 M70 100 h60"/><path class="a" d="M75 75 l50 50 M125 75 l-50 50"/><circle class="l" cx="220" cy="100" r="35"/><path class="l" d="M220 100 l20 20 M220 100 l-20 20"/></svg></div>
+  <h4>Analogie : Le médecin réputé vs. le charlatan sur internet</h4>
+  <p>Un médecin diplômé avec 20 ans d'expérience vs. un gars avec un site web qui vend un « remède miraculeux ». Lequel tu crois ? Pas pareil. L'information est pareil — tu dois évaluer la source : qui l'a dit, sur quelle preuve, avec quel historique, et qu'est-ce qu'ils ont à gagner si tu les crois.</p>
+  <h4>Source credibility : les trois axes</h4>
+  <p><strong>Terme :</strong> Source credibility assessment</p>
+  <p><strong>Définition simple :</strong> Noter une source sur trois axes : 1) est-ce que c'est une autorité ?, 2) est-ce que c'est une source documentée?, 3) a-t-elle menti avant ?</p>
+  <p><strong>Détail :</strong> Autorité : un gouvernement c'est plus légitime qu'un anonyme. Documenté : il cite les sources, il montre les preuves ? Ou c'est du claim sans fondement ? Historique : cette source a-t-elle une réputation d'être honnête ou menteuse ?</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Credibility = crédibilité. Tu dois créditer une source — lui donner un score de confiance.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Quelle source tu fais confiance le plus ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> La documentation officielle de Microsoft sur une vulnérabilité qu'elle reconnaît<br><span class="why">Autorité maximale (elle contrôle le produit) + documenté (avec preuves). Pourquoi mentirait-elle sur ses propres failles ?</span></li>
+    <li class="no"><span class="mark">✗</span> Un tweet d'une adresse anonyme qui dit avoir découvert une faille<br><span class="why">Pas d'autorité, pas de documentation, on ne sait pas qui c'est. Fuite ou hoax ?</span></li>
+    <li class="ok"><span class="mark">✓</span> Un article d'un chercheur de sécurité réputé avec preuves, mais pas l'éditeur lui-même<br><span class="why">Autorité moyenne (chercheur connu) + documenté (preuves détaillées). Mais il faut vérifier avec d'autres sources.</span></li>
+    <li class="ok"><span class="mark">✓</span> Une base de données collaborative (comme Abuseipdb) avec des milliers de rapports vérifiés<br><span class="why">Pas une source unique, mais un consensus d'observations. Fort si redondant.</span></li>
+    <li class="no"><span class="mark">✗</span> Un email d'une adresse « officielle-looking » qui dit « Patchée maintenant ! »<br><span class="why">Drapeau rouge. Pas d'archive officielle, pas de lien vérifiable, odeur de phishing.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Une source haute existe. Mais tu dois vérifier que ce que tu lis en vient vraiment.</p>
+
+  <h3 id="osint4">OSINT4 — Distinguer réalité et désinformation<span class="badge">verite</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><path class="a" d="M60 100 L100 70 L140 110 L180 50 L220 120 L260 80 L290 100"/><path class="d" d="M60 140 L100 130 L140 145 L180 125 L220 150 L260 135 L290 145"/><path class="l" d="M60 100 Q160 130 290 100"/></svg></div>
+  <h4>Analogie : La photo sortie de contexte</h4>
+  <p>Une photo de protestation peut être de 2020 ou de 2024. C'est la même photo, mais le contexte change tout. Un journaliste bien intentionné la partage sans date — c'est pas malveillant, juste maladroit. Un propagandiste la partage en disant c'est aujourd'hui — c'est malveillant. Distinguer, c'est chercher le contexte.</p>
+  <h4>Désinformation : les drapeux rouges</h4>
+  <p><strong>Terme :</strong> Misinformation vs. Disinformation</p>
+  <p><strong>Définition simple :</strong> Misinformation = info fausse par accident. Disinformation = info fausse exprès. Qui a l'information, pourquoi dirait-il ce mensonge, et quoi il a à gagner?</p>
+  <p><strong>Détail :</strong> Les techniques : photos sorties de contexte, sources biaisées, absence de preuve (« tout le monde sait »), appel aux émotions plutôt qu'aux faits. Un investigateur OSINT doit les repérer vite.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Disinformation = information fausse intentionnelle (dis- = mauvais). Misinformation = mal comprise. Tous deux sont dangereux.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Lequel de ces signaux te dit « Attends, ça peut être faux »?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Une photo accompagnée d'une description, mais la date sur la photo est de 2015 et l'article dit que c'est d'aujourd'hui<br><span class="why">Drapeau rouge classique : photo sortie de contexte. Vérifications supplémentaires nécessaires.</span></li>
+    <li class="ok"><span class="mark">✓</span> « Tout le monde sait que X » mais il n'y a aucune source citée<br><span class="why">Si c'était vrai, il citerait une source. Cette absence est suspecte.</span></li>
+    <li class="no"><span class="mark">✗</span> Un article cité par une source réputée, même si tu n'aimes pas ce qu'il dit<br><span class="why">Juste parce que tu n'aimes pas la nouvelle ne la rend pas fausse. Évite la confirmation bias.</span></li>
+    <li class="ok"><span class="mark">✓</span> L'affirmation provoque une réaction émotionnelle forte (rage, peur) mais les faits sont flous<br><span class="why">Technique de propagande classique : émotions plutôt que faits. Sois sceptique.</span></li>
+    <li class="ok"><span class="mark">✓</span> La source a un intérêt financier ou politique évident dans ce qu'elle affirme<br><span class="why">Pas nécessairement faux, mais c'est un biais. À factoriser dans ton évaluation.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Désinformation cible tes émotions. Vérité supporte des questions.</p>
+
+  <h2 id="module3">Module 3 — Approfondir et connecter</h2>
+  <div class="moduleintro">Une info c'est isolé. Mais quand tu connectes plusieurs infos, tu vois des motifs.</div>
+
+  <h3 id="osint5">OSINT5 — Trouver les personnes (passivement)<span class="badge">identite</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="a" cx="160" cy="100" r="25"/><path class="a" d="M160 75 v50 M135 100 h50"/><path class="d" d="M60 60 L140 100 M260 60 L180 100"/><path class="d" d="M60 140 L140 100 M260 140 L180 100"/><path class="l" d="M100 100 L120 110 L110 130 Z"/></svg></div>
+  <h4>Analogie : L'enquêteur qui suit les traces</h4>
+  <p>Un détective ne va pas chercher une personne juste en regardant la rue. Il regarde son téléphone, ses comptes bancaires, ses réservations d'hôtel, ses postes de travail — tout ce que la personne a laissé comme trace. OSINT c'est pareil : tu regardes tout ce qu'une personne a laissé publiquement.</p>
+  <h4>Person identification : tout ce qui est public</h4>
+  <p><strong>Terme :</strong> Persona identification</p>
+  <p><strong>Définition simple :</strong> Trouver tout ce qui est public sur une personne : comptes de réseaux sociaux, articles de presse, profils professionnels, etc.</p>
+  <p><strong>Détail :</strong> LinkedIn te dit où il travaille. Twitter te dit ses opinions. Facebook te dit sa famille. Un ancien blog te dit ses connaissances techniques. Passif = tu ne contactes pas la personne, tu lis juste ce qu'elle a volontairement publié.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Persona = masque théâtral. Chaque personne a plusieurs personnalités publiques (pro, privée, hobbies). Un OSINT efficace les relie.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Tu cherches des infos sur une personne. Quelle source te donne le plus ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Son profil LinkedIn (titre, historique de travail, compétences listées)<br><span class="why">Public par défaut. Ça te dit son expertise et ses employeurs. Très révélateur.</span></li>
+    <li class="ok"><span class="mark">✓</span> Articles de presse qui la mentionnent (conférences, récompenses, incidents)<br><span class="why">Journalistes ont fait du reportage. C'est documenté et archivé.</span></li>
+    <li class="no"><span class="mark">✗</span> Envoyer un email pour lui demander directement<br><span class="why">C'est pas OSINT. C'est contact direct. À ce point tu as laissé une trace.</span></li>
+    <li class="ok"><span class="mark">✓</span> Ses anciens postes de travail (qui a publié son nom?) ou contributions open source<br><span class="why">Ça te dit ses compétences réelles et son réseau. Difficile à falsifier.</span></li>
+    <li class="ok"><span class="mark">✓</span> Archive.org ou un moteur de recherche en cache : voir ses anciens blogs ou sites<br><span class="why">Snapshots du passé. Ça te montre l'évolution et les choses qu'elle a supprimées.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Tout ce qui a été publié une fois existe quelque part pour toujours.</p>
+
+  <h3 id="osint6">OSINT6 — Mapper les connexions<span class="badge">reseau</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="l" cx="80" cy="100" r="12"/><circle class="a" cx="160" cy="60" r="12"/><circle class="a" cx="160" cy="140" r="12"/><circle class="l" cx="240" cy="100" r="12"/><path class="d" d="M92 100 L148 60 M92 100 L148 140 M172 60 L228 100 M172 140 L228 100"/></svg></div>
+  <h4>Analogie : La carte du réseau mafieux</h4>
+  <p>Une personne en isolation, c'est peu utile à connaître. Mais si tu sais que Personne A connaît Personne B, qui connaît Personne C, et tout ce réseau fait partie du même groupe — maintenant tu vois la structure. Un OSINT investigateur connecte les dots : qui connaît qui, qui travaille avec qui, qui a des intérêts communs.</p>
+  <h4>Relationship mapping : les connexions révèlent les motifs</h4>
+  <p><strong>Terme :</strong> Link analysis ou relationship mapping</p>
+  <p><strong>Définition simple :</strong> Trouver les connexions entre les entités (personnes, organisations, domaines) et cartographier comment elles sont liées.</p>
+  <p><strong>Détail :</strong> Maltego est un outil classique pour ça. Tu rentre un domaine, il trouve : les adresses emails associées, les personnes, les serveurs liés, les documents. Tout reste passif, mais soudainement un individu n'est plus un point isolé — c'est un nœud dans un réseau.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Link = lien. Tu cherches comment chaque entité « linke » à une autre. La carte émerge.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Quels liens sont faciles à découvrir passivement ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Domaine A et Domaine B partagent la même adresse IP<br><span class="why">Public. Shodan ou un whois reverse te le dit. C'est une connexion claire.</span></li>
+    <li class="ok"><span class="mark">✓</span> Personne A et Personne B sont liées sur LinkedIn (mutually connected)<br><span class="why">Très public. LinkedIn le montre directement.</span></li>
+    <li class="ok"><span class="mark">✓</span> Organisation A et Organisation B partagent le même registraire (pour les domaines)<br><span class="why">Data whois publique. Tu peux rechercher « même registraire » et voir tous les domaines.</span></li>
+    <li class="no"><span class="mark">✗</span> Deux personnes discutent en privé dans des DMs<br><span class="why">C'est privé. C'est pas OSINT. À moins qu'un leaker le révèle publiquement.</span></li>
+    <li class="ok"><span class="mark">✓</span> Domaine A a le même registrant Name Server que Domaine B<br><span class="why">Whois public. Indique qu'elles sont gérées ensemble, probablement liées.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un individu isolé n'a pas d'histoire. Connecte les individus et l'histoire émerge.</p>
+
+  <h2 id="module4">Module 4 — Veille et adaptation</h2>
+  <div class="moduleintro">Une investigation c'est un moment. Mais une veille, c'est un processus continu.</div>
+
+  <h3 id="osint7">OSINT7 — Surveiller en continu<span class="badge">monitoring</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><path class="a" d="M50 100 L100 80 L150 110 L200 70 L250 120 L290 90"/><circle class="l" cx="100" cy="80" r="4"/><circle class="l" cx="150" cy="110" r="4"/><circle class="l" cx="200" cy="70" r="4"/><circle class="l" cx="250" cy="120" r="4"/><circle class="l" cx="290" cy="90" r="4"/><path class="d" d="M50 160 h240"/></svg></div>
+  <h4>Analogie : Le garde qui regarde 24/7</h4>
+  <p>Un garde qui regarde une porte une heure et puis s'en va — pas utile. Un garde qui regarde continuellement — voilà quelque chose. La veille OSINT c'est pareil : tu mets en place des alertes, des checks réguliers. Si quelque chose change, tu le sais immédiatement.</p>
+  <h4>Monitoring : automatiser la surveillance</h4>
+  <p><strong>Terme :</strong> Continuous monitoring ou threat intelligence feeds</p>
+  <p><strong>Définition simple :</strong> Configurer des alertes automatiques pour qu'on te notifie quand quelque chose d'important change ou apparaît.</p>
+  <p><strong>Détail :</strong> Google Alerts pour les nouvelles. Des feeds OSINT (comme Recorded Future ou Censys) qui mettent à jour continuellement. Un script qui checker un domaine chaque jour. Une alerte sur les fuites de données. Tu dors, tes alertes veillent.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Monitor = surveiller. Continu = toujours. Tu surveilles toujours, pas juste une fois.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Quelle alerte est utile pour une veille sérieuse ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Google Alert sur les mentions du domaine cible dans les actualités<br><span class="why">Tu sais immédiatement si quelque chose d'important est publié.</span></li>
+    <li class="ok"><span class="mark">✓</span> Veille sur les bases de fuites (HaveIBeenPwned, BreachDirectory) pour des emails associées<br><span class="why">Immédiat si quelqu'un d'important a son compte compromis.</span></li>
+    <li class="no"><span class="mark">✗</span> Vérifier manuellement une fois par semaine si le site a changé<br><span class="why">Non. C'est pas surveillance. C'est une check sporadique. Tu vas manquer des choses.</span></li>
+    <li class="ok"><span class="mark">✓</span> Un feed de CVE automatisé qui montre les nouvelles vulnérabilités chaque jour<br><span class="why">Tu sais si une technologie qu'on utilise a une faille. Critique pour la défense.</span></li>
+    <li class="ok"><span class="mark">✓</span> Shodan ou Censys feed : si un nouveau port ou service apparaît sur une IP cible<br><span class="why">Changement rapide = potentiellement une nouvelle exposition ou attaque.</span></li>
+  </ul>
+  <p class="retenir">À retenir : La meilleure surveillance est celle qui ne t'endort pas. Automatise tout.</p>
+
+  <h3 id="osint8">OSINT8 — Synthétiser et rapporter<span class="badge">rapport</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="d" x="40" y="30" width="240" height="140" rx="8"/><line class="d" x1="50" y1="60" x2="270" y2="60"/><line class="d" x1="50" y1="90" x2="270" y2="90"/><line class="d" x1="50" y1="120" x2="270" y2="120"/><line class="d" x1="50" y1="150" x2="270" y2="150"/><path class="a" d="M60 65 L70 75 L80 65"/><path class="a" d="M60 95 L70 105 L80 95"/><path class="a" d="M60 125 L70 135 L80 125"/></svg></div>
+  <h4>Analogie : Le rapport météo</h4>
+  <p>Un météorologue qui dit « j'ai observé 1 000 données » sans concluire = inutile. Un qui dit « Demain, tempête à 60 km/h, prenez un parapluie » = utile. Un rapport OSINT doit transformer de l'information en action.</p>
+  <h4>Intelligence reporting : transformer des faits en action</h4>
+  <p><strong>Terme :</strong> Intelligence report ou executive summary</p>
+  <p><strong>Définition simple :</strong> Un document qui synthétise tes trouvailles en un format qu'un décideur peut comprendre et sur lequel il peut agir.</p>
+  <p><strong>Détail :</strong> Pas pour les techniciens — pour les patrons. Pas « voici 100 infos » — « voici 3 risques et ce qu'on doit faire ». Chiffré, clair, sans jargon. Et avec des annexes techniques pour qui veut approfondir.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Intelligence = compréhension transformée. Report = un document. Tu ne rapportes pas juste de l'info — tu rapportes de l'intelligence.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Qu'est-ce qu'un bon rapport OSINT contient?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Un résumé en 1-2 pages : ce qu'on a trouvé et pourquoi ça compte<br><span class="why">Essentiellement. Les patrons lisent ça et décident. Si c'est pas clair là, ça ne compte pas.</span></li>
+    <li class="no"><span class="mark">✗</span> Une liste de 1 000 sources avec tous les liens<br><span class="why">Trop bruyant. Inclus les PRINCIPALES sources, pas toutes.</span></li>
+    <li class="ok"><span class="mark">✓</span> Fiabilité de chaque source (haute, moyenne, basse) et pourquoi<br><span class="why">Le lecteur doit savoir quel poids donner à chaque information.</span></li>
+    <li class="ok"><span class="mark">✓</span> Recommendations concrètes et priorités (faire ça en urgence, ça en second)<br><span class="why">Sans recommendations, le rapport = juste de la curiosité.</span></li>
+    <li class="no"><span class="mark">✗</span> Toutes les fausses pistes et les culs-de-sac que tu as exploré<br><span class="why">Non. Le rapport raconte l'histoire qui mène à la conclusion, pas les détours.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un rapport qui ne change rien, c'est juste du bruit. Force une décision.</p>
+
+</section>
+
+<section class="closing">
+  <h2>Tu as terminé le parcours Investigateur OSINT</h2>
+  <p>Maintenant tu sais : chercher stratégiquement, évaluer critiquement, connecter les motifs, surveiller continuellement, et synthétiser en action. Tu penses comme quelqu'un qui enquête.</p>
+  <p><a href="index.html">← Retour aux parcours</a></p>
+</section>
+
+</body>
+</html>

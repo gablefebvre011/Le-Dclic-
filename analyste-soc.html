@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le Déclic — Analyste SOC</title>
+<style>
+  :root{
+    --bg:#050709;
+    --bg2:#0a0e13;
+    --cyan:#5ce1e6;
+    --violet:#8b7cf6;
+    --text:#eef3f5;
+    --muted:#93a1ab;
+    --line:#1c2530;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  header{
+    position:sticky;top:env(safe-area-inset-top,0px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 22px;
+    background:rgba(5,7,9,.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    z-index:10;
+  }
+  .logo{font-weight:700;font-size:1.05rem;letter-spacing:.02em;}
+  .logo .accent{color:var(--cyan);}
+  .back{
+    display:inline-block;
+    padding:8px 16px;
+    background:rgba(92,225,230,.1);
+    border:1px solid var(--cyan);
+    border-radius:6px;
+    font-size:.9rem;
+    color:var(--cyan);
+    text-decoration:none;
+    transition:all .2s;
+  }
+  .back:hover{
+    background:rgba(92,225,230,.15);
+  }
+
+  .hero{
+    padding:60px 24px 40px;
+    text-align:center;
+    background:radial-gradient(ellipse at 50% 0%, rgba(92,225,230,.10), transparent 60%), var(--bg);
+  }
+  .eyebrow{color:var(--cyan);font-family:'Courier New',monospace;font-size:.95rem;margin-bottom:14px;}
+  h1{font-size:1.8rem;line-height:1.2;margin:0 0 14px;font-weight:700;}
+  .sub{color:var(--muted);font-size:1rem;max-width:500px;margin:0 auto 0;}
+
+  .curriculum{padding:40px 24px;}
+  .curriculum-intro{text-align:center;margin-bottom:50px;}
+  .curriculum-intro h2{font-size:1.4rem;margin:0 0 12px;}
+  .curriculum-intro .sub{color:var(--muted);font-size:.95rem;}
+
+  .toc{
+    background:rgba(92,225,230,.05);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px;
+    margin-bottom:50px;
+  }
+  .toc strong{display:block;margin-bottom:16px;color:var(--cyan);}
+  .toc h4{margin:16px 0 12px;font-size:1rem;color:var(--text);}
+  .toc ul{margin:0;padding-left:20px;list-style:none;}
+  .toc li{margin:6px 0;}
+  .toc a{color:var(--cyan);text-decoration:none;}
+  .toc a:hover{text-decoration:underline;}
+
+  h2{font-size:1.5rem;margin:60px 0 20px;font-weight:700;}
+  h2.salle{color:var(--violet);}
+  .moduleintro{color:var(--muted);font-size:1.05rem;margin-bottom:30px;font-style:italic;}
+
+  h3{font-size:1.15rem;margin:40px 0 16px;font-weight:600;display:flex;align-items:center;gap:10px;}
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:rgba(139,124,246,.2);
+    border:1px solid var(--violet);
+    border-radius:4px;
+    font-size:.8rem;
+    color:var(--violet);
+    font-weight:500;
+  }
+
+  .schema{
+    margin:24px 0;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .schema svg{width:100%;height:auto;}
+  .schema .l{fill:none;stroke:var(--cyan);stroke-width:2;}
+  .schema .a{fill:none;stroke:var(--violet);stroke-width:2;}
+  .schema .d{fill:none;stroke:var(--text);stroke-width:2;}
+
+  h4{font-size:1rem;margin:20px 0 10px;color:var(--text);}
+  p{margin:12px 0;color:var(--text);}
+  strong{color:var(--cyan);}
+
+  .consigne{
+    background:rgba(92,225,230,.05);
+    border-left:3px solid var(--cyan);
+    padding:12px 16px;
+    margin:16px 0;
+    border-radius:4px;
+  }
+
+  .opts{
+    list-style:none;
+    padding:0;
+    margin:16px 0;
+  }
+  .opts li{
+    background:rgba(10,14,19,.5);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    margin-bottom:12px;
+    border-radius:6px;
+    transition:all .2s;
+  }
+  .opts li:hover{border-color:var(--cyan);background:rgba(92,225,230,.05);}
+  .opts li.ok{border-left:3px solid #4ade80;}
+  .opts li.no{border-left:3px solid #f87171;}
+  .opts .mark{display:inline-block;width:20px;margin-right:8px;}
+  .opts .bucket{
+    display:inline-block;
+    background:rgba(139,124,246,.2);
+    color:var(--violet);
+    padding:2px 8px;
+    border-radius:3px;
+    font-size:.85rem;
+    margin-right:6px;
+  }
+  .opts code{
+    background:rgba(0,0,0,.3);
+    padding:2px 6px;
+    border-radius:3px;
+    font-family:'Courier New',monospace;
+    font-size:.9rem;
+  }
+  .why{
+    display:block;
+    color:var(--muted);
+    font-size:.9rem;
+    margin-top:6px;
+  }
+
+  .retenir{
+    background:rgba(139,124,246,.08);
+    border:1px solid var(--violet);
+    padding:16px;
+    border-radius:6px;
+    margin:20px 0;
+    color:var(--text);
+    font-weight:500;
+  }
+
+  .closing{
+    padding:60px 24px;
+    text-align:center;
+    background:var(--bg2);
+    border-top:1px solid var(--line);
+  }
+  .closing h2{font-size:1.4rem;margin:0 0 16px;}
+  .closing a{color:var(--cyan);text-decoration:none;}
+  .closing a:hover{text-decoration:underline;}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">Le <span class="accent">Déclic</span></div>
+  <a href="index.html" class="back">← Retour</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">// défense et détection</div>
+  <h1>Analyste SOC</h1>
+  <p class="sub">Tu protèges, tu détectes, tu riposts. Le parcours des gens qui veillent.</p>
+</section>
+
+<section class="curriculum">
+  <div class="curriculum-intro">
+    <h2>Quatre modules, une mission</h2>
+    <p class="sub">D'abord déceler les symptômes. Puis comprendre la maladie. Ensuite, trouver le remède. Enfin, éviter que ça recommence.</p>
+  </div>
+
+  <div class="toc">
+    <strong>Sommaire</strong>
+    <h4>Module 1 — Déceler les signaux</h4>
+    <ul>
+      <li><a href="#soc1">SOC1 — Les logs disent tout, sauf si tu ne les regardes pas</a></li>
+      <li><a href="#soc2">SOC2 — Alert fatigue : trop de bruit tue le signal</a></li>
+    </ul>
+    <h4>Module 2 — Classer et comprendre</h4>
+    <ul>
+      <li><a href="#soc3">SOC3 — Vrai attaque ou faux positif ?</a></li>
+      <li><a href="#soc4">SOC4 — Les étapes de l'attaque (Kill Chain)</a></li>
+    </ul>
+    <h4>Module 3 — Réagir vite</h4>
+    <ul>
+      <li><a href="#soc5">SOC5 — Isolation et containment : arrêter le feu</a></li>
+      <li><a href="#soc6">SOC6 — Incident playbook : ton script quand ça brûle</a></li>
+    </ul>
+    <h4>Module 4 — Apprendre et renforcer</h4>
+    <ul>
+      <li><a href="#soc7">SOC7 — Post-mortem : pourquoi c'est arrivé ?</a></li>
+      <li><a href="#soc8">SOC8 — Tuning des alertes : moins de bruit, plus de vraies menaces</a></li>
+    </ul>
+  </div>
+
+  <h2 id="module1">Module 1 — Déceler les signaux</h2>
+  <div class="moduleintro">Les attaques laissent des traces. Le travail du SOC commence là : trouver ces traces avant qu'il ne soit trop tard.</div>
+
+  <h3 id="soc1">SOC1 — Les logs disent tout, sauf si tu ne les regardes pas<span class="badge">cahier</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="d" x="30" y="40" width="260" height="120" rx="8"/><line class="d" x1="30" y1="70" x2="290" y2="70"/><line class="d" x1="30" y1="90" x2="290" y2="90"/><line class="d" x1="30" y1="110" x2="290" y2="110"/><line class="d" x1="30" y1="130" x2="290" y2="130"/><circle class="a" cx="70" cy="150" r="8"/><path class="a" d="M78 150 h40"/><circle class="l" cx="180" cy="150" r="8"/><path class="l" d="M188 150 h40"/></svg></div>
+  <h4>Analogie : Le cahier que le serveur remplit tout seul</h4>
+  <p>Un serveur, c'est comme une maison moderne. À chaque fois que quelqu'un rentre, une caméra le filme. À chaque tentative de vol, une alarme se déclenche. À chaque action, quelque chose s'écrit dans un cahier — l'heure, l'action, d'où ça venait. Le cahier remplit complètement tout seul. Sauf que ce cahier, presque personne ne le lit. Donc le voleur rentre, écrit ce qu'il veut, et personne ne sait rien.</p>
+  <h4>Un log, c'est quoi?</h4>
+  <p><strong>Terme :</strong> Logs d'accès et traces d'événements</p>
+  <p><strong>Définition simple :</strong> Un log est une trace écrite d'une action sur le serveur. Qui a essayé de se connecter, quand, d'où, avec quel mot de passe, qu'est-ce qu'il a regardé — tout est enregistré automatiquement.</p>
+  <p><strong>Détail :</strong> Les logs existent partout : serveurs web, bases de données, systèmes d'exploitation, pare-feu, antivirus. Plus tu as de couches de sécurité, plus tu as de logs. Un serveur correctement configuré génère des milliers de logs par minute. Le problème n'est pas d'en avoir : c'est d'en avoir trop pour les lire à la main.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Un « log » à l'origine, c'est un cahier de bord d'un navire. Le capitaine note tout : le vent, la direction, les incidents. Un log informatique obéit à la même règle : c'est un cahier d'événements.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Lequel de ces événements DOIT absolument être enregistré dans un log ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Une tentative de connexion — réussie ou échouée<br><span class="why">Essentiel. Si quelqu'un entre avec ton compte, le log te le dit. S'il essaie et échoue 100 fois, c'est un signal d'attaque.</span></li>
+    <li class="ok"><span class="mark">✓</span> Chaque fichier consulté par un utilisateur administrateur<br><span class="why">Les admins ont le droit d'accéder à presque tout. Donc tu dois noter ce qu'ils consulten, pour savoir si ça devient suspect.</span></li>
+    <li class="no"><span class="mark">✗</span> Chaque fois que quelqu'un clic sur une icône sur le bureau<br><span class="why">Trop bruyant. Ça remplirait les disques de logs inutiles en quelques heures. Tu logs les actions importantes, pas chaque clic souris.</span></li>
+    <li class="ok"><span class="mark">✓</span> Chaque configuration modifiée sur un serveur<br><span class="why">C'est critique. Si quelqu'un change les règles pare-feu ou les permissions, tu dois le savoir.</span></li>
+    <li class="no"><span class="mark">✗</span> Chaque affichage d'erreur triviale (un fichier manquant, une connexion timeout)<br><span class="why">Elle se produce 100 fois par jour pour des raisons normales. Tu logs les erreurs critiques, pas chaque hoquet du système.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un log bien configuré enregistre les actions importantes, pas chaque pixel qui se dessine à l'écran.</p>
+
+  <h3 id="soc2">SOC2 — Alert fatigue : trop de bruit tue le signal<span class="badge">alarme</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="l" x="30" y="50" width="80" height="100" rx="6"/><path class="l" d="M40 70 h60 M40 90 h60 M40 110 h60 M40 130 h60"/><rect class="a" x="140" y="50" width="80" height="100" rx="6"/><circle class="a" cx="180" cy="75" r="6"/><circle class="a" cx="180" cy="95" r="6"/><circle class="a" cx="180" cy="115" r="6"/><circle class="a" cx="180" cy="135" r="6"/><path class="d" d="M250 80 h50 M250 100 h30 M250 120 h40"/></svg></div>
+  <h4>Analogie : L'alarme qui crie tout le temps</h4>
+  <p>Une maison avec une alarme, c'est bien. Mais si l'alarme se déclenche chaque fois qu'un chat passe, chaque fois qu'il pleut, chaque fois qu'un voisin coupe sa haie — au bout d'une semaine, tu la désactives. Et quand le vrai voleur arrive, tu as éteint l'alarme. C'est pour ça que beaucoup d'analystes SOC manquent les vraies attaques : ils sont noyés dans les faux positifs.</p>
+  <h4>Alert fatigue : quand 10 000 alertes vaut rien</h4>
+  <p><strong>Terme :</strong> Alert fatigue</p>
+  <p><strong>Définition simple :</strong> Quand tu reçois tellement d'alertes fausses que tu commences à ignorer les vraies.</p>
+  <p><strong>Détail :</strong> Une bonne alerte, c'est une alerte que quelqu'un va lire. Si tu as 10 000 alertes par jour et que tu peux en vérifier 50, tu vas louper 99,5% de ce qui se passe. C'est l'inverse du but. Le vrai travail d'un SOC n'est pas de recevoir plus d'alertes, c'est de recevoir les BONNES alertes.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Fatigue = épuisement. L'analyste SOC s'épuise à chasser des faux positifs au lieu de traquer les vraies menaces.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Une alerte est déclenchée. Est-ce une vraie menace ou un faux positif que tu ignoras ?</p>
+  <ul class="opts">
+    <li><span class="bucket">[Vraie menace]</span> Tentative de connexion de 3 adresses IP différentes en 5 minutes sur le même compte <br><span class="why">C'est anormal. Soit c'est quelqu'un qui attaque (credential stuffing), soit c'est une erreur de programme. De toute façon, ça vaut la peine de vérifier.</span></li>
+    <li><span class="bucket">[Faux positif]</span> Un serveur web reçoit une requête HTTP mal formée<br><span class="why">Ça arrive 1 000 fois par jour quand tu as des robots, des scanneurs de sécurité, des clients cassés. C'est du bruit.</span></li>
+    <li><span class="bucket">[Vraie menace]</span> Un utilisateur accède à un fichier qu'il n'a jamais consulté avant, à 3h du matin, et télécharge 50 Mo<br><span class="why">Inhabituel, inattendu, à une heure bizarre. C'est potentiellement une fuite de données.</span></li>
+    <li><span class="bucket">[Faux positif]</span> Accès refusé : l'utilisateur a tapé son mot de passe dans un mauvais champ<br><span class="why">Banal. Les erreurs de saisie ça arrive à tout le monde. Si c'était une vraie attaque, on verrait des douzaines d'essais en quelques secondes.</span></li>
+    <li><span class="bucket">[Vraie menace]</span> Un script tente d'accéder à un fichier système qu'il ne devrait jamais lire (par exemple /etc/shadow)<br><span class="why">C'est une tentative d'escalade de privilèges, presque toujours malveillante.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Pas toutes les alertes sont créées égales. Une alerte pertinente > 10 000 alertes ignorées.</p>
+
+  <h2 id="module2">Module 2 — Classer et comprendre</h2>
+  <div class="moduleintro">Maintenant que tu as détecté quelque chose, tu dois répondre : « C'est grave ? C'est une attaque réelle ou juste un hoquet du système ? »</div>
+
+  <h3 id="soc3">SOC3 — Vrai attaque ou faux positif ?<span class="badge">loupe</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="d" cx="160" cy="100" r="50"/><path class="d" d="M195 135 l30 30"/><circle class="a" cx="140" cy="90" r="15"/><path class="a" d="M140 90 h20 M140 90 v15"/><circle class="l" cx="165" cy="110" r="8"/></svg></div>
+  <h4>Analogie : Chercher la preuve d'effraction</h4>
+  <p>Tu viens de recevoir une alerte : quelqu'un a pris une photo dans ta maison. Est-ce un vrai cambriolage ou c'est le plombier que tu as appelé ? Tu regardes : les serrures sont intact ? Les fenêtres fermées ? Rien n'a été déplacé ? Ah, alors c'est le plombier. Il avait la clé. C'est pas une effraction.</p>
+  <p>Chercher ce qui est vrai, c'est chercher les détails qui confirment ou infirment l'alerte.</p>
+  <h4>Comment enquêter sur une alerte?</h4>
+  <p><strong>Terme :</strong> Triage et investigation d'alerte</p>
+  <p><strong>Définition simple :</strong> Regarder les détails autour de l'alerte pour décider : « C'est une vraie menace, une fausse alarme, ou quelque chose que je ne comprends pas encore ? »</p>
+  <p><strong>Détail :</strong> Tu vas regarder : d'où venait la requête (adresse IP, géolocalisation), à quelle heure (c'est un horaire de travail normal?), quel compte était impliqué (c'est un compte humain ou un bot?), est-ce que d'autres logs prouvent la même chose? Une bonne investigation répond à ces questions sans avoir besoin de déranger quelqu'un d'autre.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Triage = choisir. Tu trientes les vraies alertes des fausses. Investigation = enquête. Tu mènes une petite enquête pour comprendre.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> L'alerte dit : « Login impossible, 5 tentatives en 1 minute ». Quelle preuve te convaincrait que c'est faux positif ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> L'historique montre que ce compte se connecte toujours de cette adresse IP, tous les jours à 9h<br><span class="why">Pattern connu. C'est probablement quelqu'un qui oublie son mot de passe et retry. Pas une attaque.</span></li>
+    <li class="no"><span class="mark">✗</span> L'utilisateur dit « Je n'ai rien fait » quand tu lui demandes<br><span class="why">Ça ne prouve rien. Peut-être il ment, peut-être son compte est compromis et il ne le sait pas encore.</span></li>
+    <li class="ok"><span class="mark">✓</span> L'adresse IP vient d'un VPN corporatif connu, et 500 autres utilisateurs se connectent aussi de cette adresse IP au même moment<br><span class="why">Ça rend une attaque improbable. Un attaquant ciblant 1 compte n'utiliserait pas une IP partagée par 500 personnes.</span></li>
+    <li class="no"><span class="mark">✗</span> Il n'y a pas d'autres logs suspects dans les 2 minutes qui suivent<br><span class="why">Pas suffisant. Juste parce qu'il y a pas d'autre bruit maintenant ne veut pas dire qu'il y avait pas une vraie tentative.</span></li>
+    <li class="ok"><span class="mark">✓</span> C'est une tentative de connexion à un portail d'accueil qui enregistre tout le monde (même les visiteurs externes), et l'IP est un range standard de proxys publics<br><span class="why">Extrêmement bruyant par définition. C'est de la noise normale, pas une menace.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un faux positif a des motifs. Cherche les motifs avant de sonner l'alarme.</p>
+
+  <h3 id="soc4">SOC4 — Les étapes de l'attaque (Kill Chain)<span class="badge">chaine</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="l" cx="40" cy="100" r="12"/><path class="l" d="M52 100 h24"/><circle class="l" cx="90" cy="100" r="12"/><path class="l" d="M102 100 h24"/><circle class="a" cx="140" cy="100" r="12"/><path class="a" d="M152 100 h24"/><circle class="a" cx="190" cy="100" r="12"/><path class="a" d="M202 100 h24"/><circle class="d" cx="240" cy="100" r="12"/><path class="d" d="M252 100 h24"/><circle class="d" cx="290" cy="100" r="12"/><text x="40" y="140" font-size="10" fill="#93a1ab">1</text><text x="90" y="140" font-size="10" fill="#93a1ab">2</text><text x="140" y="140" font-size="10" fill="#93a1ab">3</text><text x="190" y="140" font-size="10" fill="#93a1ab">4</text><text x="240" y="140" font-size="10" fill="#93a1ab">5</text><text x="290" y="140" font-size="10" fill="#93a1ab">6</text></svg></div>
+  <h4>Analogie : Les étapes d'un vol à l'étalage</h4>
+  <p>Un voleur à l'étalage ne rentre pas juste pour voler. Il arrive (étape 1), se repère (2), regarde où sont les caméras (3), distrait le vendeur (4), prend l'article (5), et sort discrètement (6). Une bonne sécurité arrête le voleur à chaque étape possible. Si tu rates l'étape 2, tu peux encore l'attraper à l'étape 5. C'est pour ça que tu regardes les logs de chaque étape.</p>
+  <h4>La Kill Chain : les 7 étapes d'une attaque</h4>
+  <p><strong>Terme :</strong> Cyber Kill Chain (traduit : "Chaîne de mort" - mais c'est juste les étapes de l'attaque)</p>
+  <p><strong>Définition simple :</strong> Une attaque réussie passe par des étapes : reconnaître les défenses, s'introduire, rester caché, se donner des droits, chercher ce qu'il faut voler, l'exfiltrer, puis les couvrir ses traces.</p>
+  <p><strong>Détail :</strong> Si tu arrêtes l'attaquant à l'étape 2 (reconnaissance), il n'atteint jamais l'étape 6 (vol de données). Chaque étape laisse des traces différentes. Au SOC, tu cherches ces traces avant qu'il n'avance.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Kill Chain (littéralement « chaîne de mort ») est un terme militaire. Pour tuer une cible, l'armée suit une chaîne : détecter → localiser → décider → agir → évaluer. Une attaque suit la même logique d'étapes enchaînées.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> À quelle étape de la Kill Chain ça appartient ?</p>
+  <ul class="opts">
+    <li><span class="bucket">[Reconnaissance]</span> Un scanner essaie systématiquement tous les ports du serveur<br><span class="why">Étape 1-2 : chercher à voir ce qu'il y a, sans entrer. C'est juste regarder par la fenêtre.</span></li>
+    <li><span class="bucket">[Intrusion]</span> Quelqu'un utilise un exploit connu pour accéder à un serveur vulnérable<br><span class="why">Étape 3-4 : c'est le moment où il entre vraiment. Il a trouvé la faille, il la force.</span></li>
+    <li><span class="bucket">[Escalade]</span> L'attaquant utilise un mauvais mot de passe utilisateur pour obtenir des droits administrateur<br><span class="why">Étape 5 : il est entré comme utilisateur normal, il se donne des droits pour mieux fouiller.</span></li>
+    <li><span class="bucket">[Mouvement latéral]</span> L'attaquant, une fois admin, scanne d'autres serveurs sur le réseau depuis l'intérieur<br><span class="why">Étape 6 : il est entré, maintenant il regarde ce qu'il y a d'autre près, pour trouver les données intéressantes.</span></li>
+    <li><span class="bucket">[Exfiltration]</span> L'attaquant copie 50 Go de données vers une adresse IP externe<br><span class="why">Étape 7 : c'est le vol réel. Les données quittent ton réseau. C'est le vrai dégât.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Une attaque a des étapes. Si tu la vois à l'étape 2, c'est mieux qu'à l'étape 7.</p>
+
+  <h2 id="module3">Module 3 — Réagir vite</h2>
+  <div class="moduleintro">Tu as détecté l'attaque. Maintenant : arrête le feu avant qu'il brûle ta maison.</div>
+
+  <h3 id="soc5">SOC5 — Isolation et containment : arrêter le feu<span class="badge">pompier</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="l" x="30" y="40" width="100" height="120" rx="8"/><path class="l" d="M30 100 h100 M30 140 h100"/><rect class="a" x="160" y="40" width="100" height="120" rx="8"/><path class="a" d="M160 100 h100 M160 140 h100"/><path class="d" d="M130 100 l60 0 M130 80 l0 40"/></svg></div>
+  <h4>Analogie : Isoler la pièce avant que le feu se propage</h4>
+  <p>Un feu commence dans la cuisine. Tu ne construis pas tout de suite une nouvelle cuisine. Tu fermes la porte de la cuisine pour que le feu n'atteigne pas le salon, la chambre, le reste de la maison. Puis, une fois que c'est isolé, tu peux te permettre d'appeler les pompiers, analyser ce qui s'est passé, et finalement nettoyer. Mais d'abord : arrêter la propagation. C'est exactement ce qu'on fait avec une attaque informatique.</p>
+  <h4>Containment : limiter les dégâts</h4>
+  <p><strong>Terme :</strong> Incident containment (isolation/limitation)</p>
+  <p><strong>Définition simple :</strong> Empêcher que l'attaquant ne fasse pire. Pas le guérir tout de suite, juste arrêter la saignée.</p>
+  <p><strong>Détail :</strong> Ça peut vouloir dire : déconnecter le serveur du réseau (hard containment), bloquer le compte compromis, fermer le port utilisé par l'attaquant, revenir à une sauvegarde. Chaque stratégie a un coût (arrêter le serveur = tes utilisateurs perdent l'accès) et des bénéfices (l'attaquant ne peut pas plus nuire). Le vrai travail est de choisir le bon compromis.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Containment = contenir. Comme on contient un feu. On ne l'éteint pas encore, on l'empêche juste de s'étendre.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> L'attaque est confirmée. Quelle est la bonne action de containment ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Bloquer immédiatement le compte utilisateur compromis et les adresses IP d'attaque au niveau du pare-feu<br><span class="why">Rapide, limité aux dégâts, permet aux autres utilisateurs de continuer à travailler.</span></li>
+    <li class="no"><span class="mark">✗</span> Attendre que les données soient sauvegardées avant d'agir, pour ne rien perdre<br><span class="why">Mauvais. L'attaquant continue à fouiller pendant ce temps. Tu dois arrêter EN PREMIER, sauvegarder EN DEUXIÈME.</span></li>
+    <li class="ok"><span class="mark">✓</span> Déconnecter le serveur compromis du réseau, mais le laisser allumé pour pouvoir l'analyser<br><span class="why">Élimine le risque tout en gardant la preuve disponible pour investigation.</span></li>
+    <li class="no"><span class="mark">✗</span> Attendre l'ordre du directeur avant d'agir, parce qu'arrêter un serveur peut faire des vagues<br><span class="why">Trop lent. À ce moment, tu ne contiens plus. Agis en premier, rapporte après.</span></li>
+    <li class="ok"><span class="mark">✓</span> Activer une règle pare-feu pour que tout accès de ce compte soit loggé et bloqué, mais que le compte reste actif pour que l'attaquant continue (pour l'observer)<br><span class="why">Un choix avancé : tu observes ce qu'il fait pour comprendre ses intentions. Mais c'est à hauts risques.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Contain first, investigate later. L'attaquant qui ne peut plus rien faire est un attaquant arrêté.</p>
+
+  <h3 id="soc6">SOC6 — Incident playbook : ton script quand ça brûle<span class="badge">guide</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><rect class="l" x="40" y="30" width="240" height="140" rx="8"/><path class="l" d="M50 50 h220 M50 70 h220 M50 90 h220 M50 110 h220 M50 130 h220"/><circle class="a" cx="60" cy="50" r="4"/><circle class="a" cx="60" cy="70" r="4"/><circle class="a" cx="60" cy="90" r="4"/><circle class="a" cx="60" cy="110" r="4"/><circle class="a" cx="60" cy="130" r="4"/></svg></div>
+  <h4>Analogie : La recette qu'on suit pas à pas</h4>
+  <p>Un pompier ne rentre pas dans un incendie en improvisant. Il a un playbook : d'abord couper le gaz, ensuite enfoncer la porte, puis chercher les gens. Chaque étape est écrite. Pas de débat au moment des flammes. Un incident playbook pour le SOC, c'est exactement ça : voici ce qu'on fait si type X d'attaque se produit. Pas besoin de penser.</p>
+  <h4>Playbook : quand, qui, quoi</h4>
+  <p><strong>Terme :</strong> Incident response playbook</p>
+  <p><strong>Définition simple :</strong> Un document qui dit : « Si tu vois ça, tu fais ça, dans cet ordre, et tu appelles cette personne. »</p>
+  <p><strong>Détail :</strong> Un bon playbook n'est pas une Bible épaisse. C'est une checklist. Quand ça brûle, on n'a pas le temps de lire 50 pages. On lit 5 points, et on agit. Chaque playbook couvre un type d'incident : ransomware, vol de données, attaque DDoS, credential compromise, etc.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Playbook = livre de jeu. Au football, le coach a un playbook : « Dans cette situation, on fait tel jeu. » Un incident playbook est pareil : « Dans cette situation d'attaque, on faut ça. »</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Qu'est-ce qui DOIT être dans un bon playbook ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> « Si on détecte un transfert anormal de données : 1) Isoler le serveur, 2) Notifier le manager, 3) Vérifier les backups »<br><span class="why">Clair, actionnable, une à une. Pas d'ambiguïté.</span></li>
+    <li class="no"><span class="mark">✗</span> « Répondre à l'incident de manière appropriée selon le contexte »<br><span class="why">Trop vague. Quand ça brûle, tu as pas le temps de « selon le contexte ». Tu besoin de d'instructions.</span></li>
+    <li class="ok"><span class="mark">✓</span> Les numéros de téléphone et emails des gens à appeler (le directeur, l'avocat, le backup manager)<br><span class="why">Essentiel. Quand ça brûle, on n'a pas le temps de chercher les contacts.</span></li>
+    <li class="no"><span class="mark">✗</span> Une explication de 5 pages sur pourquoi les ransomwares existent<br><span class="why">Intéressant à lire en paix, inutile quand l'attaque est active.</span></li>
+    <li class="ok"><span class="mark">✓</span> « Contact le backup manager si tu dois restaurer des données »<br><span class="why">Important, actionnable, évite des casse-têtes.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un playbook court qu'on suit vaut mieux que 50 pages personne ne lit.</p>
+
+  <h2 id="module4">Module 4 — Apprendre et renforcer</h2>
+  <div class="moduleintro">L'incident est contenu. Mais comment tu fais pour qu'il ne recommence pas ?</div>
+
+  <h3 id="soc7">SOC7 — Post-mortem : pourquoi c'est arrivé?<span class="badge">question</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><circle class="a" cx="80" cy="100" r="30"/><path class="a" d="M80 75 v50 M55 100 h50"/><path class="d" d="M120 70 l60 30 l-15 45 l-45 -15 Z"/><text x="135" y="110" font-size="14" fill="#93a1ab">?</text></svg></div>
+  <h4>Analogie : Autopsy = comment le patient est mort ?</h4>
+  <p>Après une crise cardiaque, le médecin ne dit pas « Oups, c'est arrivé ». Il fait une autopsie. Qu'est-ce qui a cloqué ? Cholestérol trop haut ? Pas d'exercice ? Stress ? Une fois qu'il sait, il peut dire au prochain patient : « Évite ça. »</p>
+  <p>Un post-mortem d'incident informatique c'est pareil : pourquoi ça a passé nos défenses ? Qu'est-ce qu'on aurait dû voir ?</p>
+  <h4>Post-Mortem : l'enquête honnête</h4>
+  <p><strong>Terme :</strong> Post-Mortem ou Incident review</p>
+  <p><strong>Définition simple :</strong> Après qu'un incident soit fini, tu t'assoies, tu regardes les logs, tu poses la question : « Où on a échoué, et pourquoi ? »</p>
+  <p><strong>Détail :</strong> Une bonne post-mortem n'est pas une chasse aux responsables. C'est une analyse des processus. « Le serveur X n'avait pas les mises à jour » = bon point. « Jean n'a pas assez vérifié » = mauvais point. Tu cherches à améliorer les systèmes, pas à blâmer les gens.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Post = après, Mortem = morte. Une autopsie, littéralement. Mais en entreprise, il n'y a personne de mort — c'est juste examiné ce qui s'est passé.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Après l'incident, qu'est-ce qu'on devrait écrire dans le post-mortem ?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Timeline complète : quand on a détecté, quand on a contenu, quand c'est fini<br><span class="why">Essentiel pour comprendre combien de temps l'attaquant avait.</span></li>
+    <li class="no"><span class="mark">✗</span> Blâmer l'admin qui a oublié de patcher le serveur<br><span class="why">Mauvais. Ça crée une culture de peur. Tu devrais plutôt écrire : « Process de patching insuffisant ».</span></li>
+    <li class="ok"><span class="mark">✓</span> « Aucune alerte n'a detécté le transfert de données anormal » — c'est une lacune à fixer<br><span class="why">Identification claire d'une faiblesse. Maintenant tu peux créer une alerte pour ça.</span></li>
+    <li class="ok"><span class="mark">✓</span> Actions : « Implémenter X détection, patcher Z, former les gens à Y »<br><span class="why">Actionable. Pas juste un rapport — c'est un plan pour mieux faire.</span></li>
+    <li class="no"><span class="mark">✗</span> Ignorer le post-mortem si l'incident était « pas si grave »<br><span class="why">Erreur. Les incidents « pas si grave » deviennent les attaques sérieuses si tu ne fixes rien.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Un post-mortem honnête te rend plus fort. Un incident caché te blesse plus tard.</p>
+
+  <h3 id="soc8">SOC8 — Tuning des alertes : moins de bruit, plus de vraies menaces<span class="badge">volume</span></h3>
+  <div class="schema"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><path class="d" d="M30 120 L80 80 L100 60 L130 90 L160 40 L200 100 L240 50 L280 110 L290 100"/><line class="d" x1="30" y1="150" x2="290" y2="150"/><path class="a" d="M60 140 L80 135 L90 145 L110 140"/><path class="l" d="M150 140 L160 138 L170 142"/></svg></div>
+  <h4>Analogie : Régler un amplificateur de musique</h4>
+  <p>Un ampli mégafort, tu entends bien la musique... et aussi les câbles qui bourdonnent, les parasites, tout. Tu baisse le volume? Maintenant tu entends rien. Le truc, c'est de le régler pour entendre la musique et ignorer le bruit. C'est pareil avec les alertes. Trop, c'est du bruit blanc. Trop peu, tu rates le concert.</p>
+  <h4>Tuning : ajuster pour ce qui compte</h4>
+  <p><strong>Terme :</strong> Alert tuning ou SIEM tuning</p>
+  <p><strong>Définition simple :</strong> Ajuster tes règles d'alerte pour envoyer moins de faux positifs et plus de vraies menaces.</p>
+  <p><strong>Détail :</strong> Au début, tu crée une règle : « Si X erreurs en Y temps, alerte ». Puis tu regardes 1 000 alertes et tu te rends compte que 999 sont fausses. Donc tu rajoutes une condition : « X erreurs MAIS pas de cette IP connue, MAIS pas à cette heure ». Progressivement, tu affines. C'est un processus continu — juste quand ça marche, une nouvelle attaque vient et tu dois réajuster.</p>
+  <p><strong>Étymologie / pourquoi ce mot :</strong> Tuning = accorder. Comme on accorde une guitare. Une alerte qui envoie trop de faux positifs est désaccordée. Tu l'accordes jusqu'à ce que ça soit juste.</p>
+  <h4>Exercice</h4>
+  <p class="consigne"><strong>Consigne :</strong> Tu reçois 100 alertes « Failed login ». 95 sont des utilisateurs qui oublient leur mot de passe. Comment tu ajuste la règle?</p>
+  <ul class="opts">
+    <li class="ok"><span class="mark">✓</span> Ajouter une condition : « Failed login, MAIS seulement si plus de 10 tentatives dans les 2 minutes »<br><span class="why">Une tentative = oubli. 10 tentatives en 2 min = bot ou attaque. Tu as éliminé le bruit.</span></li>
+    <li class="no"><span class="mark">✗</span> Désactiver complètement l'alerte « Failed login »<br><span class="why">Maintenant tu rates les VRAIES attaques. Mauvais compromis.</span></li>
+    <li class="ok"><span class="mark">✓</span> Vérifier si les 95 faux positifs viennent du même réseau (par ex. un proxy d'entreprise). Exclure ce proxy de la règle<br><span class="why">Tu identifies la source du bruit et tu la filters. Les autres failed logins font toujours alerte.</span></li>
+    <li class="no"><span class="mark">✗</span> Garder la règle comme elle est et ignorer simplement les alertes<br><span class="why">Non. Une alerte qu'on ignore est une alerte qui ne sert à rien. Autant la désactiver et être honnête.</span></li>
+    <li class="ok"><span class="mark">✓</span> Ajuster la sévérité : passer de « Critique » à « Info » pour les 1-3 tentatives, et « Critique » pour les 10+<br><span class="why">Approche nuancée. Tu reçois toujours les infos, mais les vraies menaces ressortent.</span></li>
+  </ul>
+  <p class="retenir">À retenir : Tuning c'est un art. Trop sensible = bruit. Pas sensible = aveuglement. L'équilibre, c'est l'expertise.</p>
+
+</section>
+
+<section class="closing">
+  <h2>Tu as terminé le parcours Analyste SOC</h2>
+  <p>Maintenant tu sais : détecter les signaux, les classer, réagir, et apprendre. Tu penses comme quelqu'un qui protège. C'est le cœur du métier.</p>
+  <p><a href="index.html">← Retour aux parcours</a></p>
+</section>
+
+</body>
+</html>
